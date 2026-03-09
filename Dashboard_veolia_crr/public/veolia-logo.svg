@@ -1,0 +1,8 @@
+<svg viewBox="0 0 800 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Circle -->
+  <circle cx="80" cy="100" r="60" fill="none" stroke="#E31E24" stroke-width="14"/>
+  <!-- Inner dot -->
+  <circle cx="80" cy="100" r="22" fill="#E31E24"/>
+  <!-- Text "VEOLIA" -->
+  <text x="200" y="135" font-family="Arial, sans-serif" font-size="90" font-weight="bold" fill="#E31E24">VEOLIA</text>
+</svg>
