@@ -47,7 +47,7 @@ const Index = () => {
       {/* Header */}
       <header className="dashboard-header px-3 sm:px-6 py-3 sm:py-4 flex items-center justify-between sticky top-0 z-30">
         <div className="flex flex-col items-start gap-1">
-          <img src="/veolia-logo.svg" alt="Veolia" className="h-8 sm:h-12 w-auto object-contain" />
+          <img src="/veolia-logo.png" alt="Veolia" className="h-8 sm:h-12 w-auto object-contain" />
           <h1 className="hidden sm:block text-xl font-bold text-foreground">Dashboard — Ordens de Serviço</h1>
         </div>
         <div className="flex items-center gap-1 sm:gap-2">
