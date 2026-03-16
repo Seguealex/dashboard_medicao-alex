@@ -176,12 +176,15 @@ export function ChartLineByMonth({ data }: ChartsProps) {
 
   const isMobile = useIsMobile();
 
-  const handleBarClick = (entry: any) => {
-    if (entry && entry.name) {
-      navigate(`/ordens?mes=${encodeURIComponent(entry.name)}`);
-    } else {
-      navigate("/ordens");
+  const handleChartClick = (state: any) => {
+    if (state && state.activePayload && state.activePayload.length > 0) {
+      const entryName = state.activeLabel || state.activePayload[0].payload.name;
+      if (entryName) {
+        navigate(`/ordens?mes=${encodeURIComponent(entryName)}&status_not=COMP`);
+        return;
+      }
     }
+    navigate("/ordens");
   };
 
   return (
@@ -214,7 +217,7 @@ export function ChartLineByMonth({ data }: ChartsProps) {
         </div>
       </div>
       <ResponsiveContainer width="100%" height={isMobile ? 200 : 280}>
-        <ComposedChart data={chartData} margin={{ top: 5, right: 10, left: -10, bottom: 5 }}>
+        <ComposedChart data={chartData} margin={{ top: 5, right: 10, left: -10, bottom: 5 }} onClick={handleChartClick}>
           <CartesianGrid strokeDasharray="3 3" stroke="hsl(222, 20%, 22%)" />
           <XAxis dataKey="name" tick={{ fill: "hsl(215, 15%, 55%)", fontSize: isMobile ? 9 : 11 }} axisLine={false} tickLine={false} />
           <YAxis tick={{ fill: "hsl(215, 15%, 55%)", fontSize: isMobile ? 9 : 11 }} axisLine={false} tickLine={false} width={isMobile ? 25 : 40} />
@@ -223,7 +226,7 @@ export function ChartLineByMonth({ data }: ChartsProps) {
             cursor={{ fill: "hsl(222, 20%, 22%)", opacity: 0.4 }}
           />
           <Legend wrapperStyle={{ fontSize: "12px", color: "hsl(215, 15%, 55%)" }} />
-          <Bar dataKey="Total" fill="hsl(215, 25%, 35%)" radius={[4, 4, 0, 0]} onClick={handleBarClick} className="cursor-pointer hover:opacity-80 transition-opacity" />
+          <Bar dataKey="Total" fill="hsl(215, 25%, 35%)" radius={[4, 4, 0, 0]} className="cursor-pointer hover:opacity-80 transition-opacity" />
           <Line 
             type="monotone" 
             dataKey="Próximas (30 dias)" 
@@ -231,7 +234,6 @@ export function ChartLineByMonth({ data }: ChartsProps) {
             strokeWidth={3} 
             dot={{ fill: "hsl(45, 100%, 55%)", r: 5, strokeWidth: 2 }} 
             connectNulls
-            onClick={handleBarClick}
             className="cursor-pointer hover:opacity-80 transition-opacity"
           />
         </ComposedChart>

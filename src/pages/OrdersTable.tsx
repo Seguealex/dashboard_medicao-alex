@@ -22,6 +22,7 @@ export default function OrdersTable() {
 
   // Filtros vindos da URL
   const filterStatus = searchParams.get("status");
+  const filterStatusNot = searchParams.get("status_not");
   const filterTipo = searchParams.get("tipo");
   const filterAtivo = searchParams.get("ativo");
   const filterMes = searchParams.get("mes"); // Pode ser "01/2026" ou "2026"
@@ -41,6 +42,7 @@ export default function OrdersTable() {
       const filteredData = allData.filter((item) => {
         let matches = true;
         if (filterStatus && item.status !== filterStatus) matches = false;
+        if (filterStatusNot && item.status === filterStatusNot) matches = false;
         if (filterTipo && item.tipoServico !== filterTipo) matches = false;
         if (filterAtivo && item.ativo !== filterAtivo) matches = false;
         
