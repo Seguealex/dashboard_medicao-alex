@@ -37,8 +37,11 @@ export default function AdminLogin() {
 
   return (
     <div
-      className="flex items-start justify-center min-h-screen bg-cover bg-center"
-      style={{ backgroundImage: `url('/veolia.jpg')` }}
+      className="flex items-start justify-center min-h-screen bg-cover"
+      style={{
+        backgroundImage: `url('/veolia.jpg')`,
+        backgroundPosition: "center 5%" /* Aumente para 30% ou 40% se precisar que ela desça/suba mais */
+      }}
     >
       {/* Botão Dashboard */}
       <div className="absolute top-4 left-4">
@@ -55,7 +58,8 @@ export default function AdminLogin() {
 
       {/* Card com blur */}
       <div className="bg-black/50 backdrop-blur-md rounded-lg w-full max-w-md p-0.2 mt-120 sm:mt-100">
-        <Card className="bg-black/80 text-yellow-400 rounded-lg shadow-lg">
+        {/* Aqui você controla a transparência do formulário (bg-black/60 significa 60% de opacidade) */}
+        <Card className="bg-black/10 text-yellow-400 rounded-lg shadow-lg border-yellow-400/20">
           <CardHeader>
             <CardTitle>Admin Login</CardTitle>
           </CardHeader>
@@ -75,6 +79,7 @@ export default function AdminLogin() {
                   placeholder="admin@exemplo.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  className="bg-black/40 border-yellow-400/30 text-yellow-400 placeholder:text-yellow-400/50"
                   required
                 />
               </div>
@@ -87,11 +92,16 @@ export default function AdminLogin() {
                   placeholder="Sua senha"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  className="bg-black/40 border-yellow-400/30 text-yellow-400 placeholder:text-yellow-400/50"
                   required
                 />
               </div>
 
-              <Button type="submit" className="w-full" disabled={loading}>
+              <Button
+                type="submit"
+                className="w-full bg-yellow-400 text-black hover:bg-yellow-500 font-bold"
+                disabled={loading}
+              >
                 {loading ? "Entrando..." : "Entrar"}
               </Button>
             </form>
