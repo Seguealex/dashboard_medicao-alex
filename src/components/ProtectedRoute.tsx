@@ -1,4 +1,3 @@
-// src/components/ProtectedRoute.tsx
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Navigate } from "react-router-dom";
@@ -8,36 +7,47 @@ interface ProtectedRouteProps {
 }
 
 export default function ProtectedRoute({ children }: ProtectedRouteProps) {
-  const [session, setSession] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     const checkSession = async () => {
       const { data } = await supabase.auth.getSession();
       const session = data.session;
 
-      if (session) {
-        const user = session.user;
-        const roles = user.raw_app_meta_data?.roles || [];
-        if (roles.includes("admin")) {
-          setSession(session);
-        } else {
-          setSession(null);
-        }
+      if (!session) {
+        setIsAdmin(false);
+        setLoading(false);
+        return;
+      }
+
+      const email = session.user?.email;
+
+      if (email === "renan.crr@outlook.com") {
+        setIsAdmin(true);
       } else {
-        setSession(null);
+        setIsAdmin(false);
       }
 
       setLoading(false);
     };
 
     checkSession();
+
+    const { data: listener } = supabase.auth.onAuthStateChange(() => {
+      checkSession();
+    });
+
+    return () => {
+      listener.subscription.unsubscribe();
+    };
   }, []);
 
   if (loading) return null;
 
-  if (!session) {
-    return <Navigate to="/admin-login" />;
+  if (!isAdmin) {
+    // Redireciona apenas se alguém tentar acessar rota admin sem ser admin
+    return <Navigate to="/admin-login" replace />;
   }
 
   return <>{children}</>;

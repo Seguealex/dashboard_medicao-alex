@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Shield, Trash2 } from "lucide-react";
+import { ArrowLeft, Shield, Trash2, LogOut } from "lucide-react";
 import { CsvUpload } from "@/components/CsvUpload";
 import { loadData, clearData, saveData } from "@/lib/data-store";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/lib/supabase";
 import type { OrdemServico } from "@/lib/types";
 
 const Admin = () => {
@@ -28,6 +29,11 @@ const Admin = () => {
     setData([]);
   };
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate("/admin-login");
+  };
+
   return (
     <div className="min-h-screen">
       <header className="dashboard-header px-6 py-4 flex items-center justify-between">
@@ -36,9 +42,15 @@ const Admin = () => {
             <ArrowLeft className="h-4 w-4 mr-1" /> Dashboard
           </Button>
         </div>
-        <div className="flex items-center gap-2 text-muted-foreground">
-          <Shield className="h-4 w-4" />
-          <span className="text-sm font-medium">Administração</span>
+        <div className="flex items-center gap-4 text-muted-foreground">
+          <div className="flex items-center gap-2">
+            <Shield className="h-4 w-4" />
+            <span className="text-sm font-medium">Administração</span>
+          </div>
+          <Button variant="outline" size="sm" onClick={handleLogout} className="h-8 border-border text-xs">
+            <LogOut className="h-3.5 w-3.5 mr-2" />
+            Sair
+          </Button>
         </div>
       </header>
 
