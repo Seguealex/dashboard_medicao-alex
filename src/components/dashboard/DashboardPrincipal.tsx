@@ -114,15 +114,15 @@ export function DashboardPrincipal() {
               </div>
 
               {/* Container Agrupador dos Gráficos Inferiores para Menor Espaçamento */}
-              <div className="flex flex-col gap-2 w-full min-h-0">
+              <div className="flex flex-col gap-6 w-full min-h-0">
                 {/* Terceira Linha: Composição Base (Full Width) */}
-                <div className="w-full h-full relative z-20 min-h-0 min-w-0">
+                <div className="w-full relative z-20 min-h-0 min-w-0">
                   <ComposicaoEspecificacoesChart especificacoes={faturamento.especificacoes} />
                 </div>
 
                 {/* Quarta Linha: Donut Servicos (Centralizado e maior) */}
                 <div className="flex justify-center w-full relative z-10 min-h-0 min-w-0">
-                  <div className="w-full max-w-5xl h-full min-h-0 min-w-0">
+                  <div className="w-full max-w-5xl min-h-0 min-w-0">
                     <TopServicosDonut especificacoes={faturamento.especificacoes} />
                   </div>
                 </div>
