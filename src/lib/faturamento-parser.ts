@@ -14,10 +14,15 @@ function parseBoletim(rawRows: any[][]): DadosBoletim[] {
     const row = rawRows[i];
     if (!row || row.length === 0) continue;
     
-    // Critério de parada: se a data inicial ou valor da fatura estiverem vazios e não tivermos "Saldo" puro
-    if (!row[0] && !row[9]) continue;
-    
-    // Ignoramos linhas totalmente vazias exceto o saldo
+    // Parar se encontrarmos o cabeçalho de outro contrato:
+    // Detectamos isso quando row[0] é uma string que contém "contrato nº" (case insensitive)
+    // OU quando row[0] é uma string longa de texto e não há datas/números nos campos esperados
+    if (typeof row[0] === 'string') {
+      const cell = row[0].toLowerCase();
+      if (cell.includes('contrato nº') || cell.includes('contrato n°') || cell.includes('periodo da med')) break;
+    }
+
+    // Pular linhas totalmente vazias (sem data de início, valor medido E valor fatura)
     if (!row[0] && !row[4] && !row[8]) continue;
 
     const b: DadosBoletim = {

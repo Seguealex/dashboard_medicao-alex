@@ -36,33 +36,67 @@ export function ExcelUpload() {
       setSheets(sheets, rawSheets, file.name);
 
       try {
-        const { boletim } = processarFaturamentoExcel(rawSheets);
+        const { boletim, especificacoes, mesesEspecificacoes } = processarFaturamentoExcel(rawSheets);
         
         if (replaceAll) {
           setMessage("Limpando dados antigos no banco...");
+          // Limpar Medições
           const { error: deleteError } = await supabase
             .from('medicoes')
             .delete()
-            .neq('id', '00000000-0000-0000-0000-000000000000'); // Apaga tudo se replaceAll
+            .neq('id', '00000000-0000-0000-0000-000000000000'); 
 
           if (deleteError) throw deleteError;
+
+          // Limpar Especificações
+          await supabase.from('especificacoes_meses').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+          await supabase.from('especificacoes_valores').delete().neq('id', '00000000-0000-0000-0000-000000000000');
         }
 
         setMessage("Salvando novos dados no banco...");
-        // O Supabase JS mapeia as chaves do objeto para as colunas
+        
+        // Inserir Medições (Boletim)
         const { error: insertError } = await supabase
           .from('medicoes')
           .insert(boletim);
-
         if (insertError) throw insertError;
+
+        // Inserir Cabeçalho de Meses das Especificações
+        if (mesesEspecificacoes.length > 0) {
+          const { error: mesesError } = await supabase
+            .from('especificacoes_meses')
+            .insert(mesesEspecificacoes.map((mes, i) => ({ mes_nome: mes, ordem: i })));
+          if (mesesError) throw mesesError;
+        }
+
+        // Inserir Valores das Especificações
+        if (especificacoes.length > 0) {
+          const valoresToInsert = especificacoes.flatMap(spec => 
+            spec.valoresPorMes.map(v => ({
+              tipo_servico: spec.tipoServico,
+              mes_nome: v.mes,
+              valor: v.valor
+            }))
+          );
+          
+          if (valoresToInsert.length > 0) {
+            const { error: valoresError } = await supabase
+              .from('especificacoes_valores')
+              .insert(valoresToInsert);
+            if (valoresError) throw valoresError;
+          }
+        }
+
+        setStatus("success");
+        const specValoresCount = especificacoes.flatMap(s => s.valoresPorMes).length;
+        setMessage(
+          `✅ ${file.name} — ${sheetNames.join(", ")} processado. ` +
+          `Inseridos: ${boletim.length} boletins, ${mesesEspecificacoes.length} meses e ${specValoresCount} valores de especificações.`
+        );
       } catch (dbErr: any) {
         console.error("Erro ao integrar com Supabase:", dbErr);
         throw new Error("Falha ao salvar no banco de dados: " + (dbErr.message || ""));
       }
-      setStatus("success");
-      setMessage(
-        `✅ ${file.name} — ${sheetNames.length} aba(s) carregada(s): ${sheetNames.join(", ")}. Total: ${totalRows.toLocaleString("pt-BR")} linhas.`
-      );
     } catch (err: unknown) {
       setStatus("error");
       const msg = err instanceof Error ? err.message : "Erro desconhecido.";
