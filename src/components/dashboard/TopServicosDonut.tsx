@@ -57,19 +57,19 @@ export function TopServicosDonut({ especificacoes }: Props) {
   }
 
   return (
-    <Card className="flex flex-col border-border/60 w-full shadow-md h-auto min-h-[600px]">
+    <Card className="flex flex-col border-border/60 w-full shadow-md h-auto min-h-[700px]">
       <CardHeader className="pb-2 flex-shrink-0">
         <CardTitle className="text-base text-foreground">Proporção das Especificações</CardTitle>
         <CardDescription>Resumo dos valores totais por tipo principal</CardDescription>
       </CardHeader>
-      <CardContent className="flex-1 w-full pt-4 pb-6" style={{ minHeight: 600 }}>
-        <ResponsiveContainer width="100%" height={550} debounce={100}>
+      <CardContent className="flex-1 w-full pt-4 pb-6" style={{ minHeight: 700 }}>
+        <ResponsiveContainer width="100%" height={650} debounce={100}>
           <PieChart margin={{ top: 0, bottom: 20 }}>
             <Pie
               data={chartData}
               cx="50%"
               cy="50%"
-              innerRadius={90}
+              innerRadius={85}
               outerRadius={148}
               paddingAngle={2}
               dataKey="value"
@@ -77,10 +77,10 @@ export function TopServicosDonut({ especificacoes }: Props) {
             >
               {chartData.map((entry, index) => {
                 // Se for a categoria específica, usa vermelho (#ef4444), senão usa a cor da paleta
-                const color = entry.name.trim() === "Emergenciais (Booss) - Obras" 
-                  ? "#ef4444" 
+                const color = entry.name.trim() === "Emergenciais (Booss) - Obras"
+                  ? "#ef4444"
                   : COLORS[index % COLORS.length];
-                  
+
                 return <Cell key={`cell-${index}`} fill={color} />;
               })}
             </Pie>
@@ -131,12 +131,15 @@ export function TopServicosDonut({ especificacoes }: Props) {
                               {entry.value}
                             </span>
                             {itemData && (
-                              <span className="text-[11px] text-muted-foreground mt-1 flex items-center gap-1.5">
-                                <span className="font-bold text-primary/90">{formatCurrency(itemData.value)}</span>
-                                <span className="px-1.5 py-0.5 rounded-md bg-accent/10 text-accent font-medium text-[9px]">
+                              <div className="mt-1.5 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-gradient-to-r from-blue-500/40 to-indigo-500/40 border border-blue-400/20 backdrop-blur-sm w-fit shadow-sm">
+                                <span className="font-bold text-white text-[11px] tracking-wide">
+                                  {formatCurrency(itemData.value)}
+                                </span>
+                                <span className="w-1 h-1 rounded-full bg-white/50" />
+                                <span className="text-white font-bold text-[10px]">
                                   {itemData.percentStr}
                                 </span>
-                              </span>
+                              </div>
                             )}
                           </div>
                         </li>
