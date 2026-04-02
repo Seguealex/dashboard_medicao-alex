@@ -20,8 +20,8 @@ export function TabelaDetalhamentoEspecificacoes({ especificacoes, meses }: Prop
     );
   }
 
-  // Pegar até os últimos 6 meses para não explodir horizontalmente demais (a pedido ou boa prática)
-  const mesesRecentes = meses.slice(-6);
+  // Mostrar todos os meses disponíveis para garantir que novos períodos no início da lista apareçam
+  const mesesRecentes = meses; // Removido o slice(-6) para permitir visualização completa do histórico
 
   return (
     <Card className="flex flex-col border-border/60 w-full overflow-hidden">

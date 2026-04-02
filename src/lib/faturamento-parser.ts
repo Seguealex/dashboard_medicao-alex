@@ -9,17 +9,20 @@ import type { DadosBoletim, DadosEspecificacao, FaturamentoProcessado, SpecData 
 function parseBoletim(rawRows: any[][]): DadosBoletim[] {
   const boletim: DadosBoletim[] = [];
   
-  // Começamos na linha índice 3 (quarta linha do Excel)
-  for (let i = 3; i < rawRows.length; i++) {
+  // Começamos na linha índice 1 (segunda linha do Excel), pois às vezes o cabeçalho é curto.
+  // Usamos lógica de detecção para pular cabeçalhos ou campos vazios.
+  for (let i = 1; i < rawRows.length; i++) {
     const row = rawRows[i];
     if (!row || row.length === 0) continue;
     
-    // Parar se encontrarmos o cabeçalho de outro contrato:
-    // Detectamos isso quando row[0] é uma string que contém "contrato nº" (case insensitive)
-    // OU quando row[0] é uma string longa de texto e não há datas/números nos campos esperados
+    // Ignorar ou parar se encontrarmos o cabeçalho de outro contrato ou o topo da planilha:
     if (typeof row[0] === 'string') {
       const cell = row[0].toLowerCase();
-      if (cell.includes('contrato nº') || cell.includes('contrato n°') || cell.includes('periodo da med')) break;
+      if (cell.includes('contrato n') || cell.includes('periodo da med')) {
+        // Se já temos dados, paramos. Se estamos no começo (boletim vazio), apenas pulamos essa linha de título.
+        if (boletim.length > 0) break;
+        continue;
+      }
     }
 
     // Pular linhas totalmente vazias (sem data de início, valor medido E valor fatura)
@@ -61,11 +64,18 @@ function parseEspecificacoes(rawRows: any[][]): { especificacoes: DadosEspecific
   
   // Coletar meses disponíveis (índice 1 em diante)
   for (let col = 1; col < headers.length; col++) {
-    const header = headers[col];
-    if (header && typeof header === 'string') {
+    let header = headers[col];
+    if (header != null && header !== "") {
+      // Garantir que o cabeçalho seja string (pode vir como número se for uma data serial do Excel)
+      const headerStr = String(header);
+      
       // O cabeçalho vem com quebras de linha: "21/07/2025\r\nA\r\n20/08/2025"
       // Limpamos para pegar apenas o mês/ano do fim do ciclo ou formatar melhor
-      const cleanHeader = header.replace(/\r?\n/g, ' ').replace('A ', 'à ');
+      // Substituímos " A " ou " a " por " à " para padronizar e removemos quebras de linha
+      const cleanHeader = headerStr
+        .replace(/\r?\n/g, ' ')
+        .replace(/\s+A\s+/i, ' à ') // Case-insensitive " A " com espaços
+        .trim();
       meses.push(cleanHeader);
     }
   }
